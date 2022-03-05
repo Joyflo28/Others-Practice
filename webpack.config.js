@@ -1,5 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const copyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     entry: './src/index.js',
@@ -12,18 +14,30 @@ module.exports = {
     },
     module: {
         rules: [{
-            test: /\.m?js$/,
-            exclude: /node_modules/,
-            use: {
-                loader: 'babel-loader'
+                test: /\.m?js$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader'
+                }
+            },
+            {
+                test: /\.css|.scss$/i,
+                use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
             }
-        }]
+        ]
     },
     plugins: [
         new HtmlWebpackPlugin({
             inject: true,
             template: './public/index.html',
             filename: './index.html'
+        }),
+        new MiniCssExtractPlugin(),
+        new copyPlugin({
+            patterns: [{
+                from: path.resolve(__dirname, "src", "assets/images"),
+                to: "assets/images"
+            }]
         })
     ]
 }
